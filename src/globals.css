@@ -132,7 +132,7 @@
   }
 
   .wheel-centerpiece {
-    @apply absolute w-[80px] h-[80px] bg-background rounded-full border-8 border-secondary z-10;
+    @apply absolute w-[80px] h-[80px] bg-background rounded-full border-8 border-secondary z-10 flex items-center justify-center;
     box-shadow: 0 0 15px hsl(var(--secondary) / 0.6);
   }
 

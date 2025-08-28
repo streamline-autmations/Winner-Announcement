@@ -61,7 +61,9 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
           transform: `rotate(${rotation}deg)`,
         } as React.CSSProperties}
       />
-      <div className="wheel-centerpiece" />
+      <div className="wheel-centerpiece">
+        <img src="/Golden-Logo (1).png" alt="Golden Logo" className="w-12 h-12" />
+      </div>
       <div className="wheel-pointer-container">
         <div className="wheel-pointer" />
       </div>
