@@ -47,33 +47,36 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
           </ul>
         </div>
         <div className="relative md:col-span-2 flex flex-col items-center">
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
-            <div 
-              className="w-0 h-0 
-                border-l-[25px] border-l-transparent
-                border-r-[25px] border-r-transparent
-                border-t-[40px] border-t-secondary"
-              style={{ filter: 'drop-shadow(0 6px 4px rgba(0,0,0,0.6))' }}
-            />
-            <div className="w-6 h-6 bg-secondary rounded-full -mt-3 border-4 border-yellow-700"></div>
+          {/* Custom Pointer */}
+          <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 w-[50px] h-[60px]" style={{ filter: 'drop-shadow(0 6px 4px rgba(0,0,0,0.6))' }}>
+            <div className="w-full h-full bg-zinc-900 [clip-path:polygon(0%_0%,_100%_0%,_50%_100%)]"></div>
+            <div className="absolute top-[5px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] bg-primary [clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]"></div>
           </div>
-          <Wheel
-            mustStartSpinning={mustSpin}
-            prizeNumber={prizeNumber}
-            data={wheelData}
-            onStopSpinning={onStopSpinning}
-            backgroundColors={['#991B1B', '#B45309']}
-            textColors={['#FFFFFF']}
-            outerBorderColor={"hsl(var(--secondary))"}
-            outerBorderWidth={15}
-            innerBorderColor={"hsl(var(--primary))"}
-            innerBorderWidth={20}
-            radiusLineColor={"hsl(var(--secondary))"}
-            radiusLineWidth={5}
-            fontSize={20}
-            textDistance={75}
-            spinDuration={10.0}
-          />
+
+          <div className="relative flex items-center justify-center">
+            <Wheel
+              mustStartSpinning={mustSpin}
+              prizeNumber={prizeNumber}
+              data={wheelData}
+              onStopSpinning={onStopSpinning}
+              backgroundColors={['#1C1C1C', '#991B1B']}
+              textColors={['#FFFFFF']}
+              outerBorderColor={"#D4AF37"}
+              outerBorderWidth={15}
+              innerBorderWidth={0}
+              radiusLineColor={"#D4AF37"}
+              radiusLineWidth={3}
+              fontSize={18}
+              fontWeight="bold"
+              textDistance={70}
+              spinDuration={10.0}
+            />
+            {/* Centerpiece */}
+            <div className="absolute w-[120px] h-[120px] bg-zinc-900 rounded-full border-8 border-[#D4AF37] flex items-center justify-center">
+              <RecklessBearLogo size={60} />
+            </div>
+          </div>
+          
           <Button onClick={handleSpinClick} className="button-brand mt-8" disabled={mustSpin || remainingFinalists.length <= 1}>
             {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}
           </Button>
