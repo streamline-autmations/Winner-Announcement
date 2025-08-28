@@ -13,7 +13,7 @@ const textColors = ['#FFFFFF', '#1E1B18']; // White, Dark Grey
 
 const RouletteWheel = ({ finalists, mustSpin, prizeNumber, onSpinEnd }: RouletteWheelProps) => {
   const wheelData = finalists.map((finalist, i) => ({
-    option: finalist.name.length > 15 ? finalist.name.substring(0, 15) + '...' : finalist.name,
+    option: finalist.name.length > 12 ? finalist.name.substring(0, 12) + '...' : finalist.name,
     style: {
       backgroundColor: backgroundColors[i % 2],
       textColor: textColors[i % 2],
@@ -33,9 +33,9 @@ const RouletteWheel = ({ finalists, mustSpin, prizeNumber, onSpinEnd }: Roulette
         innerBorderWidth={10}
         radiusLineColor={"#444444"}
         radiusLineWidth={2}
-        fontSize={14}
+        fontSize={12}
         fontWeight={700}
-        textDistance={75}
+        textDistance={65}
         spinDuration={0.5}
       />
     </div>
