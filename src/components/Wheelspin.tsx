@@ -47,29 +47,32 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
           </ul>
         </div>
         <div className="relative md:col-span-2 flex flex-col items-center">
-          <div 
-            className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 w-0 h-0 
-              border-l-[20px] border-l-transparent
-              border-r-[20px] border-r-transparent
-              border-t-[30px] border-t-primary"
-            style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))' }}
-          />
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
+            <div 
+              className="w-0 h-0 
+                border-l-[25px] border-l-transparent
+                border-r-[25px] border-r-transparent
+                border-t-[40px] border-t-secondary"
+              style={{ filter: 'drop-shadow(0 6px 4px rgba(0,0,0,0.6))' }}
+            />
+            <div className="w-6 h-6 bg-secondary rounded-full -mt-3 border-4 border-yellow-700"></div>
+          </div>
           <Wheel
             mustStartSpinning={mustSpin}
             prizeNumber={prizeNumber}
             data={wheelData}
             onStopSpinning={onStopSpinning}
-            backgroundColors={['#11100f', '#333333']}
+            backgroundColors={['#991B1B', '#B45309']}
             textColors={['#FFFFFF']}
             outerBorderColor={"hsl(var(--secondary))"}
-            outerBorderWidth={10}
+            outerBorderWidth={15}
             innerBorderColor={"hsl(var(--primary))"}
-            innerBorderWidth={15}
+            innerBorderWidth={20}
             radiusLineColor={"hsl(var(--secondary))"}
-            radiusLineWidth={3}
+            radiusLineWidth={5}
             fontSize={20}
             textDistance={75}
-            spinDuration={4.0}
+            spinDuration={10.0}
           />
           <Button onClick={handleSpinClick} className="button-brand mt-8" disabled={mustSpin || remainingFinalists.length <= 1}>
             {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}

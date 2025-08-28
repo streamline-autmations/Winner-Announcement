@@ -32,7 +32,9 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
     const targetIndex = entrants.findIndex(e => e.id === selectionTarget.id);
     if (targetIndex === -1) return;
 
-    const spins = 1;
+    // Add variation to the animation
+    const spins = Math.random() > 0.5 ? 2 : 1;
+    const easingPower = 5 + Math.random() * 2; // A power between 5 and 7 for a very dramatic slowdown
     const totalItems = entrants.length;
     const totalSteps = (totalItems * spins) + targetIndex;
     
@@ -44,8 +46,8 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
       const elapsedTime = timestamp - startTime;
       const progress = Math.min(elapsedTime / DURATION, 1);
 
-      // An "ease-out" function: starts fast, ends slow. A higher power (e.g., 4) makes the effect more pronounced.
-      const easedProgress = 1 - Math.pow(1 - progress, 4);
+      // A powerful "ease-out" function: starts very fast, ends very slow.
+      const easedProgress = 1 - Math.pow(1 - progress, easingPower);
 
       const currentVirtualStep = Math.floor(easedProgress * totalSteps);
       const currentIndex = currentVirtualStep % totalItems;
