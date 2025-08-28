@@ -5,6 +5,7 @@ import { Entrant } from "@/services/airtable";
 import { RecklessBearLogo } from "./RecklessBearLogo";
 import { Users, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ConfettiCannon from "./ConfettiCannon";
 
 interface FinalistSelectionProps {
   entrants: Entrant[];
@@ -19,18 +20,18 @@ interface FinalistSelectionProps {
 const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSelecting, selectionTarget, onAnimationComplete }: FinalistSelectionProps) => {
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [celebratedId, setCelebratedId] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (!selectionTarget || entrants.length === 0) return;
 
-    setCelebratedId(null); // Reset celebration on new selection
+    setCelebratedId(null);
     let timeoutId: NodeJS.Timeout;
     const targetIndex = entrants.findIndex(e => e.id === selectionTarget.id);
     if (targetIndex === -1) return;
 
-    // Animation parameters
-    const spins = 1; // Reduced for a shorter animation
+    const spins = 1;
     const totalItems = entrants.length;
     const totalSteps = (totalItems * spins) + targetIndex;
     let currentStep = 0;
@@ -42,29 +43,26 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
 
       const element = listRef.current?.children[currentIndex] as HTMLElement;
       if (element) {
-        // This keeps the highlighted item centered in the view
         element.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
 
       currentStep++;
 
       if (currentStep > totalSteps) {
-        // Animation finished, start celebration
-        setHighlightedId(selectionTarget.id); // Ensure the final one is highlighted
+        setHighlightedId(selectionTarget.id);
         setCelebratedId(selectionTarget.id);
+        setShowConfetti(true);
 
-        // Wait for celebration to finish, then notify parent
         setTimeout(() => {
           onAnimationComplete(selectionTarget);
-        }, 1500); // Match celebration animation duration
+        }, 1500);
         return;
       }
 
-      // A more aggressive ease-out curve for a dramatic slowdown
       const progress = currentStep / totalSteps;
-      const baseDelay = 1; // Very fast start
-      const slowdownFactor = 30; // Controls how much it slows down
-      const delay = baseDelay + (Math.pow(progress, 4) * slowdownFactor);
+      const baseDelay = 1;
+      const slowdownFactor = 100;
+      const delay = baseDelay + (Math.pow(progress, 6) * slowdownFactor);
 
       timeoutId = setTimeout(step, delay);
     };
@@ -78,11 +76,11 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
 
   return (
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
+      <ConfettiCannon fire={showConfetti} onComplete={() => setShowConfetti(false)} />
       <RecklessBearLogo />
       <h1 className="text-5xl font-brand my-6 text-glow-gold">FINALIST SELECTION</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Main participant list takes up more space now */}
         <Card className="md:col-span-2 bg-black/30 border-zinc-700">
           <CardHeader>
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2">
@@ -107,13 +105,12 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
           </CardContent>
         </Card>
 
-        {/* Finalists list */}
         <Card className="md:col-span-1 bg-black/30 border-yellow-500/50">
           <CardHeader>
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2 text-glow-gold">
               <Crown /> Finalists ({finalists.length}/5)
             </CardTitle>
-          </CardHeader>
+          </Header>
           <CardContent className="max-h-[60vh] overflow-y-auto">
             <ul className="space-y-3 text-left text-lg">
               {finalists.map((finalist) => (
