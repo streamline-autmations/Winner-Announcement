@@ -18,44 +18,53 @@ interface FinalistSelectionProps {
 
 const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSelecting, selectionTarget, onAnimationComplete }: FinalistSelectionProps) => {
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [celebratedId, setCelebratedId] = useState<string | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (!selectionTarget || entrants.length === 0) return;
 
+    setCelebratedId(null); // Reset celebration on new selection
     let timeoutId: NodeJS.Timeout;
     const targetIndex = entrants.findIndex(e => e.id === selectionTarget.id);
     if (targetIndex === -1) return;
 
-    // Animation parameters: spin through the list twice then land on the target
-    const totalSpins = 2;
-    const totalSteps = (entrants.length * totalSpins) + targetIndex;
+    // Animation parameters
+    const spins = 2;
+    const totalItems = entrants.length;
+    const totalSteps = (totalItems * spins) + targetIndex;
     let currentStep = 0;
 
     const step = () => {
-      const currentIndex = currentStep % entrants.length;
+      const currentIndex = currentStep % totalItems;
       const currentEntrant = entrants[currentIndex];
       setHighlightedId(currentEntrant.id);
 
-      // Scroll the highlighted item into the center of the view
       const element = listRef.current?.children[currentIndex] as HTMLElement;
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Use 'instant' to avoid conflicting with our animation timing
+        element.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
 
       currentStep++;
 
       if (currentStep > totalSteps) {
-        // Animation is complete
-        onAnimationComplete(selectionTarget);
+        // Animation finished, start celebration
+        setHighlightedId(selectionTarget.id); // Ensure the final one is highlighted
+        setCelebratedId(selectionTarget.id);
+
+        // Wait for celebration to finish, then notify parent
+        setTimeout(() => {
+          onAnimationComplete(selectionTarget);
+        }, 1500); // Match celebration animation duration
         return;
       }
 
-      // Calculate delay for the next step to create an "easing out" effect (starts fast, ends slow)
+      // Smoother ease-out timing
       const progress = currentStep / totalSteps;
-      const baseDelay = 40;
-      const slowdownFactor = 300; // This makes the slowdown more dramatic
-      const delay = baseDelay + (progress * progress * slowdownFactor);
+      const baseDelay = 30; // Start faster
+      const slowdownFactor = 400; // More dramatic slowdown
+      const delay = baseDelay + (Math.pow(progress, 3) * slowdownFactor); // Use cubic easing for a smoother curve
 
       timeoutId = setTimeout(step, delay);
     };
@@ -87,7 +96,8 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
                   key={entrant.id} 
                   className={cn(
                     "p-2 rounded-md transition-all duration-100 text-lg",
-                    highlightedId === entrant.id && "bg-primary text-primary-foreground scale-105 font-bold"
+                    highlightedId === entrant.id && "bg-primary text-primary-foreground scale-105 font-bold",
+                    celebratedId === entrant.id && "animate-celebrate"
                   )}
                 >
                   {entrant.name}
