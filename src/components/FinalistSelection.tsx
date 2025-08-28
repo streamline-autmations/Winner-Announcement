@@ -83,7 +83,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
   return (
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
       <ConfettiCannon fire={showConfetti} onComplete={() => setShowConfetti(false)} />
-      <h1 className="text-5xl font-brand my-6 title-brand">FINALIST SELECTION</h1>
+      <h1 className="text-5xl font-brand mt-24 mb-8 title-brand">FINALIST SELECTION</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <Card className="md:col-span-3 bg-card border-zinc-700/50 rounded-lg">
@@ -115,7 +115,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
             <img 
               src="/RECKLESSBEAR (1).png" 
               alt="Reckless Bear Logo" 
-              className="h-16 w-auto" 
+              className="h-12 w-auto" 
               style={{ filter: 'brightness(0) saturate(100%) invert(70%) sepia(58%) saturate(587%) hue-rotate(359deg) brightness(93%) contrast(92%)' }}
             />
             <CardTitle className="font-brand text-2xl tracking-wider pt-4">
