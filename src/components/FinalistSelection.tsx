@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Entrant } from "@/services/airtable";
-import { Users, Crown } from "lucide-react";
+import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ConfettiCannon from "./ConfettiCannon";
 
@@ -31,23 +31,19 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
     const targetIndex = entrants.findIndex(e => e.id === selectionTarget.id);
     if (targetIndex === -1) return;
 
-    // Add variation to the animation
     const spins = Math.random() > 0.5 ? 2 : 1;
-    const easingPower = 5 + Math.random() * 2; // A power between 5 and 7 for a very dramatic slowdown
+    const easingPower = 5 + Math.random() * 2;
     const totalItems = entrants.length;
     const totalSteps = (totalItems * spins) + targetIndex;
     
-    const DURATION = 8000; // 8 seconds total animation time
+    const DURATION = 8000;
     let startTime: number | null = null;
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const elapsedTime = timestamp - startTime;
       const progress = Math.min(elapsedTime / DURATION, 1);
-
-      // A powerful "ease-out" function: starts very fast, ends very slow.
       const easedProgress = 1 - Math.pow(1 - progress, easingPower);
-
       const currentVirtualStep = Math.floor(easedProgress * totalSteps);
       const currentIndex = currentVirtualStep % totalItems;
       const currentEntrant = entrants[currentIndex];
@@ -63,7 +59,6 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
       if (progress < 1) {
         animationFrameId = requestAnimationFrame(animate);
       } else {
-        // Animation finished, ensure the correct finalist is selected
         setHighlightedId(selectionTarget.id);
         const finalElement = listRef.current?.children[targetIndex] as HTMLElement;
         if (finalElement) {
@@ -88,10 +83,10 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
   return (
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
       <ConfettiCannon fire={showConfetti} onComplete={() => setShowConfetti(false)} />
-      <h1 className="text-5xl font-brand my-6 text-glow-gold">FINALIST SELECTION</h1>
+      <h1 className="text-5xl font-brand my-6 title-brand">FINALIST SELECTION</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <Card className="md:col-span-3 bg-black/30 border-zinc-700">
+        <Card className="md:col-span-3 bg-card border-zinc-700/50 rounded-lg">
           <CardHeader>
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2">
               <Users /> Participants
@@ -104,7 +99,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
                   key={entrant.id} 
                   className={cn(
                     "p-2 rounded-md transition-all duration-100 text-lg",
-                    highlightedId === entrant.id && "bg-primary text-primary-foreground scale-105 font-bold",
+                    highlightedId === entrant.id && "bg-secondary text-secondary-foreground scale-105 font-bold",
                     celebratedId === entrant.id && "animate-celebrate"
                   )}
                 >
@@ -115,21 +110,27 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1 bg-black/30 border-yellow-500/50">
-          <CardHeader>
-            <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2 text-glow-gold">
-              <Crown /> Finalists ({finalists.length}/5)
+        <Card className="md:col-span-1 bg-card border border-secondary rounded-lg">
+          <CardHeader className="items-center pb-2">
+            <img 
+              src="/RECKLESSBEAR (1).png" 
+              alt="Reckless Bear Logo" 
+              className="h-16 w-auto" 
+              style={{ filter: 'brightness(0) saturate(100%) invert(70%) sepia(58%) saturate(587%) hue-rotate(359deg) brightness(93%) contrast(92%)' }}
+            />
+            <CardTitle className="font-brand text-2xl tracking-wider pt-4">
+              Finalists ({finalists.length}/5)
             </CardTitle>
           </CardHeader>
           <CardContent className="max-h-[60vh] overflow-y-auto">
             <ul className="space-y-3 text-left text-lg">
               {finalists.map((finalist) => (
-                <li key={finalist.id} className="font-bold animate-fade-in">
+                <li key={finalist.id} className="font-bold text-secondary animate-fade-in">
                   {finalist.name}
                 </li>
               ))}
               {Array.from({ length: 5 - finalists.length }).map((_, i) => (
-                <li key={`placeholder-${i}`} className="text-zinc-600">
+                <li key={`placeholder-${i}`} className="text-zinc-500">
                   Awaiting selection...
                 </li>
               ))}
