@@ -19,18 +19,19 @@ const canvasStyles: React.CSSProperties = {
 const ConfettiCannon: React.FC<ConfettiCannonProps> = ({ fire, onComplete }) => {
   const refAnimationInstance = useRef<any>(null);
 
-  const getInstance = useCallback((instance: any) => {
-    refAnimationInstance.current = instance;
+  const onInitHandler = useCallback(({ confetti }: { confetti: any }) => {
+    refAnimationInstance.current = confetti;
   }, []);
 
   const makeShot = useCallback((particleRatio: number, opts: object) => {
-    refAnimationInstance.current &&
+    if (refAnimationInstance.current) {
       refAnimationInstance.current({
         ...opts,
         origin: { y: 0.6 },
         particleCount: Math.floor(200 * particleRatio),
         colors: ['#ffd700', '#ffab00', '#ff6d00', '#ffffff'],
       });
+    }
   }, []);
 
   const fireConfetti = useCallback(() => {
@@ -51,7 +52,7 @@ const ConfettiCannon: React.FC<ConfettiCannonProps> = ({ fire, onComplete }) => 
     }
   }, [fire, fireConfetti]);
 
-  return <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />;
+  return <ReactCanvasConfetti onInit={onInitHandler} style={canvasStyles} />;
 };
 
 export default ConfettiCannon;

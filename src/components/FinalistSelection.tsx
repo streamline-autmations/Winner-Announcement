@@ -61,8 +61,9 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
 
       const progress = currentStep / totalSteps;
       const baseDelay = 1;
-      const slowdownFactor = 100;
-      const delay = baseDelay + (Math.pow(progress, 6) * slowdownFactor);
+      // Adjusted for a shorter, more dramatic animation
+      const slowdownFactor = 50;
+      const delay = baseDelay + (Math.pow(progress, 3) * slowdownFactor);
 
       timeoutId = setTimeout(step, delay);
     };
@@ -81,7 +82,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
       <h1 className="text-5xl font-brand my-6 text-glow-gold">FINALIST SELECTION</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="md:col-span-2 bg-black/30 border-zinc-700">
+        <Card className="md-col-span-2 bg-black/30 border-zinc-700">
           <CardHeader>
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2">
               <Users /> Participants
