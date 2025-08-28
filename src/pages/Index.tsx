@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Arena from "@/components/Arena";
+import FinalistSelection from "@/components/FinalistSelection";
 import Gauntlet from "@/components/Gauntlet";
 import Champion from "@/components/Champion";
 import { saveFinalistsToAirtable, Entrant } from "@/services/airtable";
@@ -15,19 +15,24 @@ const Index = () => {
   const [allEntrants, setAllEntrants] = useState<Entrant[]>(initialEntrants);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectionTarget, setSelectionTarget] = useState<Entrant | null>(null);
 
   const handleSelectNextFinalist = () => {
     const available = allEntrants.filter(e => e.status === 'Entrant');
     if (available.length === 0 || isUpdating) return;
 
     setIsUpdating(true);
+    // Pick the winner secretly, then start the animation
     const selected = available[Math.floor(Math.random() * available.length)];
-    
-    setTimeout(() => {
-      setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' } : e));
-      toast.success(`${selected.name} has been selected as a finalist!`);
-      setIsUpdating(false);
-    }, 100); // Short delay for effect
+    setSelectionTarget(selected);
+  };
+
+  const handleAnimationComplete = (selected: Entrant) => {
+    // This runs after the animation finishes
+    setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' } : e));
+    toast.success(`${selected.name} has been selected as a finalist!`);
+    setSelectionTarget(null); // Reset for next time
+    setIsUpdating(false); // Re-enable the button
   };
 
   const handleEliminateFinalist = (eliminated: Entrant) => {
@@ -73,12 +78,14 @@ const Index = () => {
     switch (step) {
       case 'arena':
         return (
-          <Arena
+          <FinalistSelection
             entrants={entrants}
             finalists={finalists}
             onSelectNext={handleSelectNextFinalist}
             onProceed={() => setStep('gauntlet')}
             isSelecting={isUpdating}
+            selectionTarget={selectionTarget}
+            onAnimationComplete={handleAnimationComplete}
           />
         );
       case 'gauntlet':
