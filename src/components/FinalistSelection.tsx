@@ -81,8 +81,8 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
       <RecklessBearLogo />
       <h1 className="text-5xl font-brand my-6 text-glow-gold">FINALIST SELECTION</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="md-col-span-2 bg-black/30 border-zinc-700">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <Card className="md:col-span-3 bg-black/30 border-zinc-700">
           <CardHeader>
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2">
               <Users /> Participants
