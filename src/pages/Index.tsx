@@ -10,9 +10,19 @@ import { showError, showLoading, showSuccess, dismissToast } from "@/utils/toast
 
 type DrawStep = 'arena' | 'gauntlet' | 'champion';
 
+// Fisher-Yates shuffle algorithm
+const shuffleArray = (array: Entrant[]) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
 const Index = () => {
   const [step, setStep] = useState<DrawStep>('arena');
-  const [allEntrants, setAllEntrants] = useState<Entrant[]>(initialEntrants);
+  const [allEntrants, setAllEntrants] = useState<Entrant[]>(() => shuffleArray(initialEntrants));
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectionTarget, setSelectionTarget] = useState<Entrant | null>(null);

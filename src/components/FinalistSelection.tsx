@@ -62,8 +62,8 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
 
       // Smoother ease-out timing
       const progress = currentStep / totalSteps;
-      const baseDelay = 30; // Start faster
-      const slowdownFactor = 400; // More dramatic slowdown
+      const baseDelay = 2; // Start faster
+      const slowdownFactor = 15; // Adjust for a faster overall animation
       const delay = baseDelay + (Math.pow(progress, 3) * slowdownFactor); // Use cubic easing for a smoother curve
 
       timeoutId = setTimeout(step, delay);
