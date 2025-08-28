@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Entrant } from "@/services/airtable";
-import { RecklessBearLogo } from "./RecklessBearLogo";
 import { Users, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ConfettiCannon from "./ConfettiCannon";
@@ -89,7 +88,6 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
   return (
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
       <ConfettiCannon fire={showConfetti} onComplete={() => setShowConfetti(false)} />
-      <RecklessBearLogo />
       <h1 className="text-5xl font-brand my-6 text-glow-gold">FINALIST SELECTION</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
