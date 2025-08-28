@@ -27,49 +27,59 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
     if (!selectionTarget || entrants.length === 0) return;
 
     setCelebratedId(null);
-    let timeoutId: NodeJS.Timeout;
+    let animationFrameId: number;
+
     const targetIndex = entrants.findIndex(e => e.id === selectionTarget.id);
     if (targetIndex === -1) return;
 
     const spins = 1;
     const totalItems = entrants.length;
     const totalSteps = (totalItems * spins) + targetIndex;
-    let currentStep = 0;
+    
+    const DURATION = 8000; // 8 seconds total animation time
+    let startTime: number | null = null;
 
-    const step = () => {
-      const currentIndex = currentStep % totalItems;
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsedTime = timestamp - startTime;
+      const progress = Math.min(elapsedTime / DURATION, 1);
+
+      // An "ease-out" function: starts fast, ends slow. A higher power (e.g., 4) makes the effect more pronounced.
+      const easedProgress = 1 - Math.pow(1 - progress, 4);
+
+      const currentVirtualStep = Math.floor(easedProgress * totalSteps);
+      const currentIndex = currentVirtualStep % totalItems;
       const currentEntrant = entrants[currentIndex];
-      setHighlightedId(currentEntrant.id);
-
-      const element = listRef.current?.children[currentIndex] as HTMLElement;
-      if (element) {
-        element.scrollIntoView({ behavior: 'instant', block: 'center' });
+      
+      if (currentEntrant) {
+        setHighlightedId(currentEntrant.id);
+        const element = listRef.current?.children[currentIndex] as HTMLElement;
+        if (element) {
+          element.scrollIntoView({ behavior: 'instant', block: 'center' });
+        }
       }
 
-      currentStep++;
-
-      if (currentStep > totalSteps) {
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        // Animation finished, ensure the correct finalist is selected
         setHighlightedId(selectionTarget.id);
+        const finalElement = listRef.current?.children[targetIndex] as HTMLElement;
+        if (finalElement) {
+            finalElement.scrollIntoView({ behavior: 'instant', block: 'center' });
+        }
         setCelebratedId(selectionTarget.id);
         setShowConfetti(true);
 
         setTimeout(() => {
           onAnimationComplete(selectionTarget);
         }, 1500);
-        return;
       }
-
-      const progress = currentStep / totalSteps;
-      const baseDelay = 1;
-      const slowdownFactor = 80;
-      const delay = baseDelay + (Math.pow(progress, 5) * slowdownFactor);
-
-      timeoutId = setTimeout(step, delay);
     };
 
-    step();
+    animationFrameId = requestAnimationFrame(animate);
 
-    return () => clearTimeout(timeoutId);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [selectionTarget, entrants, onAnimationComplete]);
 
   const canSelectMore = finalists.length < 5;
