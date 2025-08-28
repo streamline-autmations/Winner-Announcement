@@ -30,7 +30,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
     if (targetIndex === -1) return;
 
     // Animation parameters
-    const spins = 2;
+    const spins = 1; // Reduced for a shorter animation
     const totalItems = entrants.length;
     const totalSteps = (totalItems * spins) + targetIndex;
     let currentStep = 0;
@@ -42,7 +42,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
 
       const element = listRef.current?.children[currentIndex] as HTMLElement;
       if (element) {
-        // Use 'instant' to avoid conflicting with our animation timing
+        // This keeps the highlighted item centered in the view
         element.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
 
@@ -60,11 +60,11 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
         return;
       }
 
-      // Smoother ease-out timing
+      // A more aggressive ease-out curve for a dramatic slowdown
       const progress = currentStep / totalSteps;
-      const baseDelay = 2; // Start faster
-      const slowdownFactor = 15; // Adjust for a faster overall animation
-      const delay = baseDelay + (Math.pow(progress, 3) * slowdownFactor); // Use cubic easing for a smoother curve
+      const baseDelay = 1; // Very fast start
+      const slowdownFactor = 30; // Controls how much it slows down
+      const delay = baseDelay + (Math.pow(progress, 4) * slowdownFactor);
 
       timeoutId = setTimeout(step, delay);
     };
