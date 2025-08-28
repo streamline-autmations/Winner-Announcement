@@ -14,11 +14,11 @@
     --popover-foreground: 0 0% 98%;
 
     /* Energetic Red */
-    --primary: 0 100% 50%;
+    --primary: 0 84% 60%;
     --primary-foreground: 0 0% 100%;
 
     /* Glowing Gold */
-    --secondary: 45 100% 50%;
+    --secondary: 45 100% 51%;
     --secondary-foreground: 10 5% 8%;
 
     --muted: 217.2 32.6% 17.5%;
@@ -32,7 +32,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 0 100% 50%;
+    --ring: 0 84% 60%;
 
     --radius: 0.5rem;
   }
@@ -48,10 +48,10 @@
     --popover: 10 5% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 100% 50%;
+    --primary: 0 84% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 45 100% 50%;
+    --secondary: 45 100% 51%;
     --secondary-foreground: 10 5% 8%;
 
     --muted: 217.2 32.6% 17.5%;
@@ -65,7 +65,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 0 100% 50%;
+    --ring: 0 84% 60%;
   }
 }
 
@@ -104,8 +104,8 @@
       0 0 20px hsl(var(--primary) / 0.4);
   }
   .button-brand {
-    @apply bg-red-600 text-white font-black uppercase tracking-widest text-2xl px-12 py-6 rounded-lg shadow-lg transition-all duration-300;
-    @apply hover:bg-red-500 hover:shadow-red-500/50;
+    @apply bg-primary text-primary-foreground font-black uppercase tracking-widest text-2xl px-12 py-6 rounded-lg shadow-lg transition-all duration-300;
+    @apply hover:bg-primary/90 hover:shadow-primary/50;
     text-shadow: 0 2px 4px rgba(0,0,0,0.4);
   }
 }

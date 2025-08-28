@@ -5,27 +5,25 @@ import Champion from "@/components/Champion";
 import { getEntrants, updateEntrantStatus, Entrant } from "@/services/airtable";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecklessBearLogo } from "@/components/RecklessBearLogo";
+import { toast } from "sonner";
 
 type DrawStep = 'arena' | 'gauntlet' | 'champion';
 
 const Index = () => {
   const [step, setStep] = useState<DrawStep>('arena');
-  const [availableEntrants, setAvailableEntrants] = useState<Entrant[]>([]);
-  const [finalists, setFinalists] = useState<Entrant[]>([]);
-  const [winner, setWinner] = useState<Entrant | null>(null);
+  const [allEntrants, setAllEntrants] = useState<Entrant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSelecting, setIsSelecting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     const fetchEntrants = async () => {
       try {
-        const allEntrants = await getEntrants();
-        // If you refresh, this will correctly sort people who are already finalists
-        setAvailableEntrants(allEntrants.filter(e => e.status === 'Entrant'));
-        setFinalists(allEntrants.filter(e => e.status === 'Finalist'));
+        const entrants = await getEntrants();
+        setAllEntrants(entrants);
       } catch (err) {
         setError('Failed to load participants. Please check your Airtable connection and refresh.');
+        toast.error('Failed to load participants.');
       } finally {
         setIsLoading(false);
       }
@@ -34,42 +32,52 @@ const Index = () => {
   }, []);
 
   const handleSelectNextFinalist = async () => {
-    if (availableEntrants.length === 0 || finalists.length >= 5 || isSelecting) return;
+    const available = allEntrants.filter(e => e.status === 'Entrant');
+    if (available.length === 0 || isUpdating) return;
 
-    setIsSelecting(true);
-
-    const randomIndex = Math.floor(Math.random() * availableEntrants.length);
-    const selected = availableEntrants[randomIndex];
-
+    setIsUpdating(true);
+    const selected = available[Math.floor(Math.random() * available.length)];
+    
     try {
-      // Update the screen immediately for a snappy feel
-      setFinalists(prev => [...prev, { ...selected, status: 'Finalist' }]);
-      setAvailableEntrants(prev => prev.filter(e => e.id !== selected.id));
-
-      // Update Airtable in the background
+      setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' } : e));
+      toast.success(`${selected.name} has been selected as a finalist!`);
       await updateEntrantStatus(selected.id, 'Finalist');
     } catch (err) {
-      console.error("Failed to update status:", err);
       setError("Failed to update finalist. Please try again.");
-      // If the API call fails, revert the change on screen
-      setFinalists(prev => prev.filter(f => f.id !== selected.id));
-      setAvailableEntrants(prev => [...prev, selected].sort((a, b) => a.name.localeCompare(b.name)));
+      toast.error(`Failed to save ${selected.name} as finalist.`);
+      setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Entrant' } : e));
     } finally {
-      setIsSelecting(false);
+      setIsUpdating(false);
     }
   };
 
-  const handleProceedToGauntlet = () => {
-    if (finalists.length >= 5) {
-      setStep('gauntlet');
+  const handleEliminateFinalist = async (eliminated: Entrant) => {
+    if (isUpdating) return;
+    
+    setIsUpdating(true);
+    try {
+      setAllEntrants(prev => prev.map(e => e.id === eliminated.id ? { ...e, status: 'Eliminated' } : e));
+      toast.error(`${eliminated.name} has been eliminated!`);
+      await updateEntrantStatus(eliminated.id, 'Eliminated');
+
+      const remaining = allEntrants.filter(e => e.status === 'Finalist' && e.id !== eliminated.id);
+      if (remaining.length === 1) {
+        handleWinner(remaining[0]);
+      }
+    } catch (err) {
+      setError("Failed to eliminate finalist. Please try again.");
+      toast.error(`Failed to eliminate ${eliminated.name}.`);
+      setAllEntrants(prev => prev.map(e => e.id === eliminated.id ? { ...e, status: 'Finalist' } : e));
+    } finally {
+      setIsUpdating(false);
     }
   };
 
-  const handleDrawComplete = (winner: Entrant) => {
-    setWinner(winner);
+  const handleWinner = async (winner: Entrant) => {
     setStep('champion');
-    // Optional: update winner status in Airtable
-    updateEntrantStatus(winner.id, 'Winner').catch(err => console.error("Failed to update winner status:", err));
+    setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' } : e));
+    toast.success(`Congratulations to our winner, ${winner.name}!`);
+    await updateEntrantStatus(winner.id, 'Winner');
   };
 
   const renderContent = () => {
@@ -92,19 +100,23 @@ const Index = () => {
       );
     }
 
+    const entrants = allEntrants.filter(e => e.status === 'Entrant');
+    const finalists = allEntrants.filter(e => e.status === 'Finalist' || e.status === 'Eliminated' || e.status === 'Winner');
+    const winner = allEntrants.find(e => e.status === 'Winner') || null;
+
     switch (step) {
       case 'arena':
         return (
           <Arena
-            entrants={availableEntrants}
+            entrants={entrants}
             finalists={finalists}
             onSelectNext={handleSelectNextFinalist}
-            onProceed={handleProceedToGauntlet}
-            isSelecting={isSelecting}
+            onProceed={() => setStep('gauntlet')}
+            isSelecting={isUpdating}
           />
         );
       case 'gauntlet':
-        return <Gauntlet finalists={finalists} onDrawComplete={handleDrawComplete} />;
+        return <Gauntlet finalists={finalists} onEliminate={handleEliminateFinalist} />;
       case 'champion':
         return <Champion winner={winner} />;
       default:

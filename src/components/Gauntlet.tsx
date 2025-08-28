@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Wheel } from "react-custom-roulette";
 import { Entrant } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
@@ -6,23 +6,15 @@ import { RecklessBearLogo } from "./RecklessBearLogo";
 
 interface GauntletProps {
   finalists: Entrant[];
-  onDrawComplete: (winner: Entrant) => void;
+  onEliminate: (eliminated: Entrant) => void;
 }
 
-const Gauntlet = ({ finalists, onDrawComplete }: GauntletProps) => {
-  const [internalFinalists, setInternalFinalists] = useState(finalists);
+const Gauntlet = ({ finalists, onEliminate }: GauntletProps) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
-  const remainingFinalists = internalFinalists.filter(f => f.status !== 'Eliminated');
-  const wheelData = remainingFinalists.map(f => ({ option: f.name.split(' ')[0] }));
-
-  useEffect(() => {
-    if (remainingFinalists.length === 1) {
-      const timer = setTimeout(() => onDrawComplete(remainingFinalists[0]), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [internalFinalists, onDrawComplete, remainingFinalists]);
+  const remainingFinalists = finalists.filter(f => f.status === 'Finalist');
+  const wheelData = remainingFinalists.map(f => ({ option: f.name.split(' ')[0] || f.name }));
 
   const handleSpinClick = () => {
     if (!mustSpin && wheelData.length > 1) {
@@ -35,11 +27,7 @@ const Gauntlet = ({ finalists, onDrawComplete }: GauntletProps) => {
   const onStopSpinning = () => {
     setMustSpin(false);
     const eliminatedPerson = remainingFinalists[prizeNumber];
-    setInternalFinalists(prev =>
-      prev.map(f =>
-        f.id === eliminatedPerson.id ? { ...f, status: 'Eliminated' } : f
-      )
-    );
+    onEliminate(eliminatedPerson);
   };
 
   return (
@@ -51,7 +39,7 @@ const Gauntlet = ({ finalists, onDrawComplete }: GauntletProps) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
         <div className="md:col-span-1">
           <ul className="space-y-2 text-xl text-left">
-            {internalFinalists.map(f => (
+            {finalists.map(f => (
               <li key={f.id} className={`transition-all duration-500 ${f.status === 'Eliminated' ? 'text-zinc-500 line-through decoration-red-500 decoration-2' : ''}`}>
                 {f.name}
               </li>
@@ -66,11 +54,11 @@ const Gauntlet = ({ finalists, onDrawComplete }: GauntletProps) => {
             onStopSpinning={onStopSpinning}
             backgroundColors={['#11100f', '#333333']}
             textColors={['#FFFFFF']}
-            outerBorderColor={"#FFD700"}
+            outerBorderColor={"hsl(var(--secondary))"}
             outerBorderWidth={5}
-            innerBorderColor={"#FFD700"}
+            innerBorderColor={"hsl(var(--secondary))"}
             innerBorderWidth={10}
-            radiusLineColor={"#FFD700"}
+            radiusLineColor={"hsl(var(--secondary))"}
             radiusLineWidth={2}
             fontSize={20}
             textDistance={75}

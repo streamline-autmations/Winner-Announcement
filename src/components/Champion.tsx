@@ -10,7 +10,6 @@ const Champion = ({ winner }: ChampionProps) => {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto text-center animate-fade-in flex flex-col items-center">
-      {/* Placeholder for confetti GIF */}
       <div className="absolute -top-20 -inset-x-0 h-[100vh] bg-[url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExb255a254a254a254a254a254a254a254a254a254/l41Yg3wbEY235w9Tq/giphy.gif')] bg-contain bg-no-repeat opacity-50 mix-blend-screen"></div>
       
       <RecklessBearLogo size={120} />
@@ -23,7 +22,6 @@ const Champion = ({ winner }: ChampionProps) => {
       </div>
 
       <div className="mt-12 z-10">
-        {/* Placeholder for prize graphic */}
         <div className="bg-yellow-500 text-black p-6 rounded-lg">
           <p className="text-4xl font-brand">R10 000 CASH PRIZE</p>
         </div>
