@@ -15,7 +15,7 @@ const Index = () => {
 
   const handleStartDraw = () => {
     const shuffled = [...allEntrants].sort(() => 0.5 - Math.random());
-    const selectedFinalists = shuffled.slice(0, 5).map(f => ({...f, status: 'Finalist'}));
+    const selectedFinalists = shuffled.slice(0, 5).map(f => ({...f, status: 'Finalist' as const}));
     setFinalists(selectedFinalists);
     setStep('selection');
   };
