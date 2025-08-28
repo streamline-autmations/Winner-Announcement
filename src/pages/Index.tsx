@@ -108,8 +108,12 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8 flex items-center justify-center min-h-screen">
-      {renderContent()}
+    <div className="relative min-h-screen w-full">
+      <img src="/Golden-Logo (1).png" alt="Golden Logo" className="absolute top-8 left-8 w-24 h-auto z-20" />
+      <div className="container mx-auto p-4 md:p-8 flex flex-col items-center justify-start min-h-screen">
+        <img src="/RECKLESSBEAR (1).png" alt="Reckless Bear" className="w-full max-w-lg my-8" />
+        {renderContent()}
+      </div>
     </div>
   );
 };

@@ -86,7 +86,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
         <Card className="md:col-span-2 bg-black/30 border-zinc-700">
           <CardHeader>
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2">
-              <Users /> Participants ({entrants.length})
+              <Users /> Participants
             </CardTitle>
           </CardHeader>
           <CardContent className="max-h-[60vh] overflow-y-auto pr-4">
