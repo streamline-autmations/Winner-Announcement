@@ -14,7 +14,7 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
 
   const wheelData = useMemo(() => {
     const numSegments = finalists.length;
-    if (numSegments === 0) return { gradient: '', segments: [] };
+    if (numSegments === 0) return { gradient: 'none', segments: [] };
     
     const segmentAngle = 360 / numSegments;
     const colors = ['hsl(var(--secondary))', 'hsl(var(--primary))']; // Gold, Red
@@ -44,8 +44,9 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
       setIsSpinning(true);
       
       const numSegments = finalists.length;
+      if (numSegments === 0) return;
+
       const segmentAngle = 360 / numSegments;
-      
       const targetSegmentCenter = (prizeNumber * segmentAngle) + (segmentAngle / 2);
       const targetRotation = 360 - targetSegmentCenter;
 
@@ -61,16 +62,16 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
 
       return () => clearTimeout(timer);
     }
-  }, [mustSpin, isSpinning, prizeNumber, finalists, onSpinEnd, rotation]);
+  }, [mustSpin, isSpinning, prizeNumber, finalists.length, onSpinEnd, rotation]);
 
   return (
     <div className="wheel-container">
       <div 
         className="wheel"
         style={{
-          '--wheel-gradient': wheelData.gradient,
+          backgroundImage: wheelData.gradient,
           transform: `rotate(${rotation}deg)`,
-        } as React.CSSProperties}
+        }}
       >
         {wheelData.segments.map((segment) => (
           <div
