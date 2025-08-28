@@ -1,6 +1,6 @@
 import { useState } from "react";
 import FinalistSelection from "@/components/FinalistSelection";
-import Gauntlet from "@/components/Gauntlet";
+import Wheelspin from "@/components/Wheelspin";
 import Champion from "@/components/Champion";
 import { saveFinalistsToAirtable, Entrant } from "@/services/airtable";
 import { initialEntrants } from "@/data/participants";
@@ -8,7 +8,7 @@ import { RecklessBearLogo } from "@/components/RecklessBearLogo";
 import { toast } from "sonner";
 import { showError, showLoading, showSuccess, dismissToast } from "@/utils/toast";
 
-type DrawStep = 'arena' | 'gauntlet' | 'champion';
+type DrawStep = 'arena' | 'wheelspin' | 'champion';
 
 // Fisher-Yates shuffle algorithm
 const shuffleArray = (array: Entrant[]) => {
@@ -92,14 +92,14 @@ const Index = () => {
             entrants={entrants}
             finalists={finalists}
             onSelectNext={handleSelectNextFinalist}
-            onProceed={() => setStep('gauntlet')}
+            onProceed={() => setStep('wheelspin')}
             isSelecting={isUpdating}
             selectionTarget={selectionTarget}
             onAnimationComplete={handleAnimationComplete}
           />
         );
-      case 'gauntlet':
-        return <Gauntlet finalists={finalists} onEliminate={handleEliminateFinalist} />;
+      case 'wheelspin':
+        return <Wheelspin finalists={finalists} onEliminate={handleEliminateFinalist} />;
       case 'champion':
         return <Champion winner={winner} onSave={handleSaveResults} isSaving={isSaving} />;
       default:

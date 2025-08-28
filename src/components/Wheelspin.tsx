@@ -4,12 +4,12 @@ import { Entrant } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { RecklessBearLogo } from "./RecklessBearLogo";
 
-interface GauntletProps {
+interface WheelspinProps {
   finalists: Entrant[];
   onEliminate: (eliminated: Entrant) => void;
 }
 
-const Gauntlet = ({ finalists, onEliminate }: GauntletProps) => {
+const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
@@ -33,7 +33,7 @@ const Gauntlet = ({ finalists, onEliminate }: GauntletProps) => {
   return (
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
       <RecklessBearLogo />
-      <h1 className="text-5xl font-brand my-6 text-glow-gold">THE GAUNTLET</h1>
+      <h1 className="text-5xl font-brand my-6 text-glow-gold">THE WHEELSPIN</h1>
       <h2 className="text-2xl font-brand mb-8">{remainingFinalists.length} FINALISTS REMAIN</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
@@ -46,7 +46,14 @@ const Gauntlet = ({ finalists, onEliminate }: GauntletProps) => {
             ))}
           </ul>
         </div>
-        <div className="md:col-span-2 flex flex-col items-center">
+        <div className="relative md:col-span-2 flex flex-col items-center">
+          <div 
+            className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 w-0 h-0 
+              border-l-[20px] border-l-transparent
+              border-r-[20px] border-r-transparent
+              border-t-[30px] border-t-primary"
+            style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))' }}
+          />
           <Wheel
             mustStartSpinning={mustSpin}
             prizeNumber={prizeNumber}
@@ -55,14 +62,14 @@ const Gauntlet = ({ finalists, onEliminate }: GauntletProps) => {
             backgroundColors={['#11100f', '#333333']}
             textColors={['#FFFFFF']}
             outerBorderColor={"hsl(var(--secondary))"}
-            outerBorderWidth={5}
-            innerBorderColor={"hsl(var(--secondary))"}
-            innerBorderWidth={10}
+            outerBorderWidth={10}
+            innerBorderColor={"hsl(var(--primary))"}
+            innerBorderWidth={15}
             radiusLineColor={"hsl(var(--secondary))"}
-            radiusLineWidth={2}
+            radiusLineWidth={3}
             fontSize={20}
             textDistance={75}
-            spinDuration={0.5}
+            spinDuration={4.0}
           />
           <Button onClick={handleSpinClick} className="button-brand mt-8" disabled={mustSpin || remainingFinalists.length <= 1}>
             {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}
@@ -73,4 +80,4 @@ const Gauntlet = ({ finalists, onEliminate }: GauntletProps) => {
   );
 };
 
-export default Gauntlet;
+export default Wheelspin;

@@ -61,9 +61,8 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
 
       const progress = currentStep / totalSteps;
       const baseDelay = 1;
-      // Adjusted for a shorter, more dramatic animation
-      const slowdownFactor = 50;
-      const delay = baseDelay + (Math.pow(progress, 3) * slowdownFactor);
+      const slowdownFactor = 80;
+      const delay = baseDelay + (Math.pow(progress, 5) * slowdownFactor);
 
       timeoutId = setTimeout(step, delay);
     };
@@ -136,7 +135,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
           </Button>
         ) : (
           <Button onClick={onProceed} className="button-brand">
-            PROCEED TO GAUNTLET
+            PROCEED TO WHEELSPIN
           </Button>
         )}
       </div>
