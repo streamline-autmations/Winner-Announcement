@@ -37,7 +37,7 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
         <div className="md:col-span-1">
           <ul className="space-y-2 text-xl text-left">
             {finalists.map(f => (
-              <li key={f.id} className={`transition-all duration-500 ${f.status === 'Eliminated' ? 'text-zinc-500 line-through decoration-red-500 decoration-2' : ''}`}>
+              <li key={f.id} className={`transition-all duration-500 ${f.status === 'Eliminated' ? 'opacity-40' : 'opacity-100'}`}>
                 {f.name}
               </li>
             ))}
