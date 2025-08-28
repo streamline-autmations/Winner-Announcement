@@ -69,7 +69,7 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
               fontSize={18}
               fontWeight="bold"
               textDistance={70}
-              spinDuration={6.0}
+              spinDuration={4.0}
             />
             {/* Centerpiece */}
             <div className="absolute w-[120px] h-[120px] bg-zinc-900 rounded-full border-8 border-[#D4AF37] flex items-center justify-center">
