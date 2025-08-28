@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Entrant } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
-import CustomWheel from "./CustomWheel";
+import RouletteWheel from "./RouletteWheel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import WinnerModal from "./WinnerModal";
@@ -60,7 +60,7 @@ const Wheelspin = ({ finalists, onEliminate, winner, onCloseWinnerModal, onSave,
         </Card>
         
         <div className="relative md:col-span-2 flex flex-col items-center">
-          <CustomWheel
+          <RouletteWheel
             finalists={remainingFinalists}
             mustSpin={mustSpin}
             prizeNumber={prizeNumber}
