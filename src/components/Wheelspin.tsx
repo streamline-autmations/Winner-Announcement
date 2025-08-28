@@ -5,6 +5,7 @@ import RouletteWheel from "./RouletteWheel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import WinnerModal from "./WinnerModal";
+import WinnerDisplay from "./WinnerDisplay";
 
 interface WheelspinProps {
   finalists: Entrant[];
@@ -39,7 +40,11 @@ const Wheelspin = ({ finalists, onEliminate, winner, onCloseWinnerModal, onSave,
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
       <WinnerModal winner={winner} onClose={onCloseWinnerModal} />
       <h1 className="text-5xl font-brand mt-24 mb-8 title-brand">THE WHEELSPIN</h1>
-      <h2 className="text-2xl font-brand mb-8">{remainingFinalists.length} FINALISTS REMAIN</h2>
+      {winner ? (
+        <h2 className="text-2xl font-brand mb-8">WE HAVE A WINNER!</h2>
+      ) : (
+        <h2 className="text-2xl font-brand mb-8">{remainingFinalists.length} FINALISTS REMAIN</h2>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
         <Card className="md:col-span-1 bg-card border-zinc-700/50 rounded-lg text-left">
@@ -59,25 +64,34 @@ const Wheelspin = ({ finalists, onEliminate, winner, onCloseWinnerModal, onSave,
           </CardContent>
         </Card>
         
-        <div className="relative md:col-span-2 flex flex-col items-center">
-          <RouletteWheel
-            finalists={remainingFinalists}
-            mustSpin={mustSpin}
-            prizeNumber={prizeNumber}
-            onSpinEnd={handleSpinEnd}
-          />
-          
-          <div className="mt-8">
-            {remainingFinalists.length > 1 ? (
-              <Button onClick={handleSpinClick} className="button-brand" disabled={mustSpin}>
-                {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}
-              </Button>
-            ) : (
-              <Button onClick={onSave} className="button-brand" disabled={isSaving}>
-                {isSaving ? 'SAVING...' : 'SAVE RESULTS'}
-              </Button>
-            )}
-          </div>
+        <div className="relative md:col-span-2 flex flex-col items-center justify-center min-h-[500px]">
+          {winner ? (
+            <>
+              <WinnerDisplay winner={winner} />
+              <div className="mt-8">
+                <Button onClick={onSave} className="button-brand" disabled={isSaving}>
+                  {isSaving ? 'SAVING...' : 'SAVE RESULTS'}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <RouletteWheel
+                finalists={remainingFinalists}
+                mustSpin={mustSpin}
+                prizeNumber={prizeNumber}
+                onSpinEnd={handleSpinEnd}
+              />
+              
+              <div className="mt-8">
+                {remainingFinalists.length > 1 && (
+                  <Button onClick={handleSpinClick} className="button-brand" disabled={mustSpin}>
+                    {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

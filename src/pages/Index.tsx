@@ -36,25 +36,24 @@ const Index = () => {
   };
 
   const handleAnimationComplete = (selected: Entrant) => {
-    setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' } : e));
+    setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' as const } : e));
     toast.success(`${selected.name} has been selected as a finalist!`);
     setSelectionTarget(null);
     setIsUpdating(false);
   };
 
   const handleWinner = (winner: Entrant) => {
-    setTimeout(() => {
-      setWinner(winner);
-      setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' } : e));
-      toast.success(`Congratulations to our winner, ${winner.name}!`);
-    }, 1500);
+    setWinner(winner);
+    setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' as const } : e));
+    toast.success(`Congratulations to our winner, ${winner.name}!`);
   };
 
   const handleEliminateFinalist = (eliminated: Entrant) => {
-    setAllEntrants(prev => prev.map(e => e.id === eliminated.id ? { ...e, status: 'Eliminated' } : e));
+    const updatedEntrants = allEntrants.map(e => e.id === eliminated.id ? { ...e, status: 'Eliminated' as const } : e);
+    setAllEntrants(updatedEntrants);
     toast.error(`${eliminated.name} has been eliminated!`);
 
-    const remaining = allEntrants.filter(e => e.status === 'Finalist' && e.id !== eliminated.id);
+    const remaining = updatedEntrants.filter(e => e.status === 'Finalist');
     if (remaining.length === 1) {
       handleWinner(remaining[0]);
     }

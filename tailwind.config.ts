@@ -88,12 +88,17 @@ export default {
         "celebrate": {
           '0%, 100%': { transform: 'scale(1.1)', color: 'hsl(var(--primary-foreground))', backgroundColor: 'hsl(var(--primary))' },
           '50%': { transform: 'scale(1.25)', color: 'hsl(var(--secondary-foreground))', backgroundColor: 'hsl(var(--secondary))', textShadow: '0 0 10px hsl(var(--secondary))' },
+        },
+        "celebrate-text": {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.9' },
+          '50%': { transform: 'scale(1.15)', opacity: '1', textShadow: '0 0 20px hsl(var(--secondary))' },
         }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "celebrate": "celebrate 1.5s ease-in-out",
+        "celebrate-text": "celebrate-text 2s ease-in-out infinite",
       },
     },
   },
