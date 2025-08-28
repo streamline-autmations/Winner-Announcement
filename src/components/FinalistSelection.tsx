@@ -110,7 +110,7 @@ const FinalistSelection = ({ entrants, finalists, onSelectNext, onProceed, isSel
             <CardTitle className="font-brand text-2xl tracking-wider flex items-center justify-center gap-2 text-glow-gold">
               <Crown /> Finalists ({finalists.length}/5)
             </CardTitle>
-          </Header>
+          </CardHeader>
           <CardContent className="max-h-[60vh] overflow-y-auto">
             <ul className="space-y-3 text-left text-lg">
               {finalists.map((finalist) => (
