@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Wheel } from "react-custom-roulette";
-import { Entrant } from "@/data/mockData";
+import { Entrant } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { RecklessBearLogo } from "./RecklessBearLogo";
 
@@ -22,7 +22,7 @@ const Gauntlet = ({ finalists, onDrawComplete }: GauntletProps) => {
       const timer = setTimeout(() => onDrawComplete(remainingFinalists[0]), 2000);
       return () => clearTimeout(timer);
     }
-  }, [internalFinalists, onDrawComplete]);
+  }, [internalFinalists, onDrawComplete, remainingFinalists]);
 
   const handleSpinClick = () => {
     if (!mustSpin && wheelData.length > 1) {

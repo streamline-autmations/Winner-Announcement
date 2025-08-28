@@ -1,4 +1,4 @@
-import { Entrant } from "@/data/mockData";
+import { Entrant } from "@/services/airtable";
 import { RecklessBearLogo } from "./RecklessBearLogo";
 
 interface ChampionProps {
