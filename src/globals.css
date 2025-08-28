@@ -116,7 +116,9 @@
   }
 
   .wheel {
-    @apply relative w-full h-full rounded-full border-[15px] border-secondary transition-transform duration-[6000ms];
+    @apply relative w-full h-full rounded-full border-secondary transition-transform;
+    border-width: 15px;
+    transition-duration: 6000ms;
     box-shadow: 0 0 20px hsl(var(--secondary) / 0.5), inset 0 0 25px hsl(var(--background) / 0.7);
     background-image: var(--wheel-gradient);
     transition-timing-function: cubic-bezier(0.1, 0.8, 0.25, 1);
