@@ -1,11 +1,14 @@
 import { Entrant } from "@/services/airtable";
 import { RecklessBearLogo } from "./RecklessBearLogo";
+import { Button } from "./ui/button";
 
 interface ChampionProps {
   winner: Entrant | null;
+  onSave: () => void;
+  isSaving: boolean;
 }
 
-const Champion = ({ winner }: ChampionProps) => {
+const Champion = ({ winner, onSave, isSaving }: ChampionProps) => {
   if (!winner) return null;
 
   return (
@@ -25,6 +28,12 @@ const Champion = ({ winner }: ChampionProps) => {
         <div className="bg-yellow-500 text-black p-6 rounded-lg">
           <p className="text-4xl font-brand">R10 000 CASH PRIZE</p>
         </div>
+      </div>
+
+      <div className="mt-12 z-10">
+        <Button onClick={onSave} disabled={isSaving} className="button-brand">
+          {isSaving ? 'SAVING...' : 'SAVE RESULTS TO AIRTABLE'}
+        </Button>
       </div>
     </div>
   );

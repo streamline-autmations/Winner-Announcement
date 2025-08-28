@@ -1,7 +1,7 @@
 export interface Entrant {
   id: string;
   name: string;
-  email: string;
+  email?: string; // Email is not in the static list, so it's optional
   status: 'Entrant' | 'Finalist' | 'Eliminated' | 'Winner';
 }
 
@@ -9,7 +9,6 @@ export interface Entrant {
 const transformRecord = (record: any): Entrant => {
   return {
     id: record.id,
-    // IMPORTANT: Replace 'Name', 'Email', and 'Status' with the exact names of your columns in Airtable.
     name: record.fields.Name,
     email: record.fields.Email,
     status: record.fields.Status,
@@ -34,7 +33,6 @@ export const getEntrants = async (): Promise<Entrant[]> => {
     }
 
     const data = await response.json();
-    // The 'records' property contains your rows
     return data.records.map(transformRecord);
 
   } catch (error) {
@@ -51,14 +49,13 @@ export const updateEntrantStatus = async (id: string, newStatus: Entrant['status
 
   try {
     const response = await fetch(url, {
-      method: 'PATCH', // Use PATCH to update a record
+      method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         fields: {
-          // IMPORTANT: Ensure 'Status' is the exact name of your status column in Airtable.
           'Status': newStatus,
         },
       }),
@@ -76,4 +73,20 @@ export const updateEntrantStatus = async (id: string, newStatus: Entrant['status
     console.error("Error updating entrant status in Airtable:", error);
     throw error;
   }
+};
+
+export const saveFinalistsToAirtable = async (finalistsToSave: Entrant[]) => {
+  const liveEntrants = await getEntrants();
+  
+  const promises = finalistsToSave.map(finalist => {
+    const liveRecord = liveEntrants.find(live => live.name === finalist.name);
+    if (liveRecord) {
+      return updateEntrantStatus(liveRecord.id, finalist.status);
+    } else {
+      console.warn(`Could not find a matching record in Airtable for: ${finalist.name}`);
+      return Promise.resolve();
+    }
+  });
+
+  await Promise.all(promises);
 };

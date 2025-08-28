@@ -1,105 +1,71 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Arena from "@/components/Arena";
 import Gauntlet from "@/components/Gauntlet";
 import Champion from "@/components/Champion";
-import { getEntrants, updateEntrantStatus, Entrant } from "@/services/airtable";
-import { Skeleton } from "@/components/ui/skeleton";
+import { saveFinalistsToAirtable, Entrant } from "@/services/airtable";
+import { initialEntrants } from "@/data/participants";
 import { RecklessBearLogo } from "@/components/RecklessBearLogo";
 import { toast } from "sonner";
+import { showError, showLoading, showSuccess, dismissToast } from "@/utils/toast";
 
 type DrawStep = 'arena' | 'gauntlet' | 'champion';
 
 const Index = () => {
   const [step, setStep] = useState<DrawStep>('arena');
-  const [allEntrants, setAllEntrants] = useState<Entrant[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [allEntrants, setAllEntrants] = useState<Entrant[]>(initialEntrants);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const fetchEntrants = async () => {
-      try {
-        const entrants = await getEntrants();
-        setAllEntrants(entrants);
-      } catch (err) {
-        setError('Failed to load participants. Please check your Airtable connection and refresh.');
-        toast.error('Failed to load participants.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEntrants();
-  }, []);
-
-  const handleSelectNextFinalist = async () => {
+  const handleSelectNextFinalist = () => {
     const available = allEntrants.filter(e => e.status === 'Entrant');
     if (available.length === 0 || isUpdating) return;
 
     setIsUpdating(true);
     const selected = available[Math.floor(Math.random() * available.length)];
     
-    try {
+    setTimeout(() => {
       setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' } : e));
       toast.success(`${selected.name} has been selected as a finalist!`);
-      await updateEntrantStatus(selected.id, 'Finalist');
-    } catch (err) {
-      setError("Failed to update finalist. Please try again.");
-      toast.error(`Failed to save ${selected.name} as finalist.`);
-      setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Entrant' } : e));
-    } finally {
       setIsUpdating(false);
+    }, 100); // Short delay for effect
+  };
+
+  const handleEliminateFinalist = (eliminated: Entrant) => {
+    setAllEntrants(prev => prev.map(e => e.id === eliminated.id ? { ...e, status: 'Eliminated' } : e));
+    toast.error(`${eliminated.name} has been eliminated!`);
+
+    const remaining = allEntrants.filter(e => e.status === 'Finalist' && e.id !== eliminated.id);
+    if (remaining.length === 1) {
+      handleWinner(remaining[0]);
     }
   };
 
-  const handleEliminateFinalist = async (eliminated: Entrant) => {
-    if (isUpdating) return;
-    
-    setIsUpdating(true);
+  const handleWinner = (winner: Entrant) => {
+    setTimeout(() => {
+      setStep('champion');
+      setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' } : e));
+      toast.success(`Congratulations to our winner, ${winner.name}!`);
+    }, 1500); // Delay to let the final elimination sink in
+  };
+
+  const handleSaveResults = async () => {
+    setIsSaving(true);
+    const toastId = showLoading("Saving results to Airtable...");
     try {
-      setAllEntrants(prev => prev.map(e => e.id === eliminated.id ? { ...e, status: 'Eliminated' } : e));
-      toast.error(`${eliminated.name} has been eliminated!`);
-      await updateEntrantStatus(eliminated.id, 'Eliminated');
-
-      const remaining = allEntrants.filter(e => e.status === 'Finalist' && e.id !== eliminated.id);
-      if (remaining.length === 1) {
-        handleWinner(remaining[0]);
-      }
-    } catch (err) {
-      setError("Failed to eliminate finalist. Please try again.");
-      toast.error(`Failed to eliminate ${eliminated.name}.`);
-      setAllEntrants(prev => prev.map(e => e.id === eliminated.id ? { ...e, status: 'Finalist' } : e));
+      const finalists = allEntrants.filter(e => e.status === 'Finalist' || e.status === 'Eliminated' || e.status === 'Winner');
+      await saveFinalistsToAirtable(finalists);
+      dismissToast(String(toastId));
+      showSuccess("Results saved successfully!");
+    } catch (error) {
+      dismissToast(String(toastId));
+      showError("Failed to save results. Check Airtable connection.");
+      console.error("Airtable save error:", error);
     } finally {
-      setIsUpdating(false);
+      setIsSaving(false);
     }
-  };
-
-  const handleWinner = async (winner: Entrant) => {
-    setStep('champion');
-    setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' } : e));
-    toast.success(`Congratulations to our winner, ${winner.name}!`);
-    await updateEntrantStatus(winner.id, 'Winner');
   };
 
   const renderContent = () => {
-    if (isLoading) {
-      return (
-        <div className="w-full max-w-4xl mx-auto text-center">
-          <RecklessBearLogo />
-          <h1 className="text-5xl font-brand my-6 text-glow-gold">LOADING PARTICIPANTS...</h1>
-          <Skeleton className="w-full h-[50vh] bg-black/30 border-zinc-700 rounded-lg" />
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="text-center p-10 bg-red-900/50 border border-red-500 rounded-lg">
-          <h2 className="text-2xl font-brand text-red-400">An Error Occurred</h2>
-          <p>{error}</p>
-        </div>
-      );
-    }
-
     const entrants = allEntrants.filter(e => e.status === 'Entrant');
     const finalists = allEntrants.filter(e => e.status === 'Finalist' || e.status === 'Eliminated' || e.status === 'Winner');
     const winner = allEntrants.find(e => e.status === 'Winner') || null;
@@ -118,9 +84,9 @@ const Index = () => {
       case 'gauntlet':
         return <Gauntlet finalists={finalists} onEliminate={handleEliminateFinalist} />;
       case 'champion':
-        return <Champion winner={winner} />;
+        return <Champion winner={winner} onSave={handleSaveResults} isSaving={isSaving} />;
       default:
-        return null;
+        return <RecklessBearLogo />;
     }
   };
 
