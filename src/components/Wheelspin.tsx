@@ -4,13 +4,18 @@ import { Button } from "@/components/ui/button";
 import CustomWheel from "./CustomWheel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import WinnerModal from "./WinnerModal";
 
 interface WheelspinProps {
   finalists: Entrant[];
   onEliminate: (eliminated: Entrant) => void;
+  winner: Entrant | null;
+  onCloseWinnerModal: () => void;
+  onSave: () => void;
+  isSaving: boolean;
 }
 
-const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
+const Wheelspin = ({ finalists, onEliminate, winner, onCloseWinnerModal, onSave, isSaving }: WheelspinProps) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
@@ -32,6 +37,7 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
 
   return (
     <div className="w-full max-w-6xl mx-auto text-center animate-fade-in">
+      <WinnerModal winner={winner} onClose={onCloseWinnerModal} />
       <h1 className="text-5xl font-brand mt-24 mb-8 title-brand">THE WHEELSPIN</h1>
       <h2 className="text-2xl font-brand mb-8">{remainingFinalists.length} FINALISTS REMAIN</h2>
 
@@ -61,9 +67,17 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
             onSpinEnd={handleSpinEnd}
           />
           
-          <Button onClick={handleSpinClick} className="button-brand mt-8" disabled={mustSpin || remainingFinalists.length <= 1}>
-            {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}
-          </Button>
+          <div className="mt-8">
+            {remainingFinalists.length > 1 ? (
+              <Button onClick={handleSpinClick} className="button-brand" disabled={mustSpin}>
+                {mustSpin ? 'SPINNING...' : 'SPIN TO ELIMINATE'}
+              </Button>
+            ) : (
+              <Button onClick={onSave} className="button-brand" disabled={isSaving}>
+                {isSaving ? 'SAVING...' : 'SAVE RESULTS'}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import FinalistSelection from "@/components/FinalistSelection";
 import Wheelspin from "@/components/Wheelspin";
-import Champion from "@/components/Champion";
 import { saveFinalistsToAirtable, Entrant } from "@/services/airtable";
 import { initialEntrants } from "@/data/participants";
 import { toast } from "sonner";
 import { showError, showLoading, showSuccess, dismissToast } from "@/utils/toast";
 
-type DrawStep = 'arena' | 'wheelspin' | 'champion';
+type DrawStep = 'arena' | 'wheelspin';
 
 // Fisher-Yates shuffle algorithm
 const shuffleArray = (array: Entrant[]) => {
@@ -25,23 +24,30 @@ const Index = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectionTarget, setSelectionTarget] = useState<Entrant | null>(null);
+  const [winner, setWinner] = useState<Entrant | null>(null);
 
   const handleSelectNextFinalist = () => {
     const available = allEntrants.filter(e => e.status === 'Entrant');
     if (available.length === 0 || isUpdating) return;
 
     setIsUpdating(true);
-    // Pick the winner secretly, then start the animation
     const selected = available[Math.floor(Math.random() * available.length)];
     setSelectionTarget(selected);
   };
 
   const handleAnimationComplete = (selected: Entrant) => {
-    // This runs after the animation finishes
     setAllEntrants(prev => prev.map(e => e.id === selected.id ? { ...e, status: 'Finalist' } : e));
     toast.success(`${selected.name} has been selected as a finalist!`);
-    setSelectionTarget(null); // Reset for next time
-    setIsUpdating(false); // Re-enable the button
+    setSelectionTarget(null);
+    setIsUpdating(false);
+  };
+
+  const handleWinner = (winner: Entrant) => {
+    setTimeout(() => {
+      setWinner(winner);
+      setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' } : e));
+      toast.success(`Congratulations to our winner, ${winner.name}!`);
+    }, 1500);
   };
 
   const handleEliminateFinalist = (eliminated: Entrant) => {
@@ -52,14 +58,6 @@ const Index = () => {
     if (remaining.length === 1) {
       handleWinner(remaining[0]);
     }
-  };
-
-  const handleWinner = (winner: Entrant) => {
-    setTimeout(() => {
-      setStep('champion');
-      setAllEntrants(prev => prev.map(e => e.id === winner.id ? { ...e, status: 'Winner' } : e));
-      toast.success(`Congratulations to our winner, ${winner.name}!`);
-    }, 1500); // Delay to let the final elimination sink in
   };
 
   const handleSaveResults = async () => {
@@ -82,7 +80,6 @@ const Index = () => {
   const renderContent = () => {
     const entrants = allEntrants.filter(e => e.status === 'Entrant');
     const finalists = allEntrants.filter(e => e.status === 'Finalist' || e.status === 'Eliminated' || e.status === 'Winner');
-    const winner = allEntrants.find(e => e.status === 'Winner') || null;
 
     switch (step) {
       case 'arena':
@@ -98,9 +95,16 @@ const Index = () => {
           />
         );
       case 'wheelspin':
-        return <Wheelspin finalists={finalists} onEliminate={handleEliminateFinalist} />;
-      case 'champion':
-        return <Champion winner={winner} onSave={handleSaveResults} isSaving={isSaving} />;
+        return (
+          <Wheelspin 
+            finalists={finalists} 
+            onEliminate={handleEliminateFinalist}
+            winner={winner}
+            onCloseWinnerModal={() => setWinner(null)}
+            onSave={handleSaveResults}
+            isSaving={isSaving}
+          />
+        );
       default:
         return null;
     }
