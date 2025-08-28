@@ -4,7 +4,6 @@ import Wheelspin from "@/components/Wheelspin";
 import Champion from "@/components/Champion";
 import { saveFinalistsToAirtable, Entrant } from "@/services/airtable";
 import { initialEntrants } from "@/data/participants";
-import { RecklessBearLogo } from "@/components/RecklessBearLogo";
 import { toast } from "sonner";
 import { showError, showLoading, showSuccess, dismissToast } from "@/utils/toast";
 
@@ -103,7 +102,7 @@ const Index = () => {
       case 'champion':
         return <Champion winner={winner} onSave={handleSaveResults} isSaving={isSaving} />;
       default:
-        return <RecklessBearLogo />;
+        return null;
     }
   };
 
@@ -111,7 +110,6 @@ const Index = () => {
     <div className="relative min-h-screen w-full">
       <img src="/Golden-Logo (1).png" alt="Golden Logo" className="absolute top-8 left-8 w-24 h-auto z-20" />
       <div className="container mx-auto p-4 md:p-8 flex flex-col items-center justify-start min-h-screen">
-        <img src="/RECKLESSBEAR (1).png" alt="Reckless Bear" className="w-full max-w-lg my-8" />
         {renderContent()}
       </div>
     </div>

@@ -109,3 +109,65 @@
     text-shadow: 0 2px 4px rgba(0,0,0,0.4);
   }
 }
+
+@layer components {
+  .wheel-container {
+    @apply relative flex items-center justify-center w-[450px] h-[450px] mx-auto;
+  }
+
+  .wheel {
+    @apply relative w-full h-full rounded-full border-[15px] border-secondary transition-transform duration-[6000ms];
+    box-shadow: 0 0 20px hsl(var(--secondary) / 0.5), inset 0 0 25px hsl(var(--background) / 0.7);
+    background-image: var(--wheel-gradient);
+    transition-timing-function: cubic-bezier(0.1, 0.8, 0.25, 1);
+  }
+
+  /* Glossy Sheen */
+  .wheel::after {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background-image: radial-gradient(circle at 50% 0, rgba(255,255,255,0.3), transparent 70%);
+  }
+
+  .wheel-centerpiece {
+    @apply absolute w-[80px] h-[80px] bg-background rounded-full border-8 border-secondary z-10;
+    box-shadow: 0 0 15px hsl(var(--secondary) / 0.6);
+  }
+
+  .wheel-pointer-container {
+    @apply absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-[60px] h-[70px];
+    filter: drop-shadow(0 8px 6px rgba(0,0,0,0.7));
+  }
+
+  .wheel-pointer {
+    @apply w-full h-full relative;
+  }
+
+  /* Pointer layers for 3D/glowing effect */
+  .wheel-pointer::before, .wheel-pointer::after {
+    content: '';
+    @apply absolute left-0 top-0 w-full h-full;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+  }
+  .wheel-pointer::before {
+    @apply bg-secondary;
+    /* Glow */
+    filter: blur(5px);
+  }
+  .wheel-pointer::after {
+    @apply bg-primary;
+    /* Inset effect */
+    clip-path: polygon(50% 90%, 10% 5%, 90% 5%);
+  }
+  
+  /* Background Glow Effect */
+  .wheel-glow {
+    @apply absolute w-[120%] h-[120%] rounded-full -z-10 transition-opacity duration-500;
+    background-image: radial-gradient(circle, hsl(var(--secondary) / 0.3) 0%, transparent 70%);
+    opacity: 0;
+  }
+
+  .wheel-glow.active {
+    opacity: 1;
+  }
+}
