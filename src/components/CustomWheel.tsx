@@ -10,7 +10,6 @@ interface CustomWheelProps {
 
 const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNumber, onSpinEnd }) => {
   const [rotation, setRotation] = useState(0);
-  const [isSpinning, setIsSpinning] = useState(false);
 
   const wheelData = useMemo(() => {
     const numSegments = finalists.length;
@@ -40,9 +39,7 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
   }, [finalists]);
 
   useEffect(() => {
-    if (mustSpin && !isSpinning) {
-      setIsSpinning(true);
-      
+    if (mustSpin) {
       const numSegments = finalists.length;
       if (numSegments === 0) return;
 
@@ -51,18 +48,19 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
       const targetRotation = 360 - targetSegmentCenter;
 
       const fullSpins = 5 + Math.floor(Math.random() * 3);
-      const finalRotation = (rotation - (rotation % 360)) + (360 * fullSpins) + targetRotation;
-
-      setRotation(finalRotation);
+      
+      setRotation(currentRotation => {
+        const finalRotation = (currentRotation - (currentRotation % 360)) + (360 * fullSpins) + targetRotation;
+        return finalRotation;
+      });
 
       const timer = setTimeout(() => {
-        setIsSpinning(false);
         onSpinEnd();
-      }, 6000); // Corresponds to the CSS transition duration
+      }, 6000);
 
       return () => clearTimeout(timer);
     }
-  }, [mustSpin, isSpinning, prizeNumber, finalists.length, onSpinEnd, rotation]);
+  }, [mustSpin, prizeNumber, finalists.length, onSpinEnd]);
 
   return (
     <div className="wheel-container">
@@ -94,7 +92,7 @@ const CustomWheel: React.FC<CustomWheelProps> = ({ finalists, mustSpin, prizeNum
       <div className="wheel-pointer-container">
         <div className="wheel-pointer" />
       </div>
-      <div className={`wheel-glow ${isSpinning ? 'active' : ''}`} />
+      <div className={`wheel-glow ${mustSpin ? 'active' : ''}`} />
     </div>
   );
 };
