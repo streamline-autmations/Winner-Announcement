@@ -9,6 +9,12 @@ interface WheelspinProps {
   onEliminate: (eliminated: Entrant) => void;
 }
 
+// Theme colors for the wheel
+const backgroundColors = ['#F04A4A', '#FFD500']; // Primary Red, Secondary Gold
+const textColors = ['#FFFFFF', '#11100F']; // White text on Red, Dark text on Gold
+const outerBorderColor = "#FFD500";
+const radiusLineColor = "#FFD500";
+
 const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
@@ -48,9 +54,13 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
         </div>
         <div className="relative md:col-span-2 flex flex-col items-center">
           {/* Custom Pointer */}
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 w-[50px] h-[60px]" style={{ filter: 'drop-shadow(0 6px 4px rgba(0,0,0,0.6))' }}>
-            <div className="w-full h-full bg-zinc-900 [clip-path:polygon(0%_0%,_100%_0%,_50%_100%)]"></div>
-            <div className="absolute top-[5px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] bg-primary [clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]"></div>
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 w-[50px] h-[60px]" style={{ filter: 'drop-shadow(0 6px 4px rgba(0,0,0,0.6))' }}>
+            {/* Gold Outline */}
+            <div className="w-full h-full bg-secondary [clip-path:polygon(0%_0%,_100%_0%,_50%_100%)]"></div>
+            {/* Inner dark part */}
+            <div className="absolute top-[3px] left-[3px] w-[44px] h-[54px] bg-background [clip-path:polygon(0%_0%,_100%_0%,_50%_100%)]"></div>
+            {/* Red Accent at the top */}
+            <div className="absolute top-[5px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] bg-primary [clip-path:polygon(0%_0%,_100%_0%,_50%_100%)]"></div>
           </div>
 
           <div className="relative flex items-center justify-center">
@@ -59,20 +69,20 @@ const Wheelspin = ({ finalists, onEliminate }: WheelspinProps) => {
               prizeNumber={prizeNumber}
               data={wheelData}
               onStopSpinning={onStopSpinning}
-              backgroundColors={['#1C1C1C', '#991B1B']}
-              textColors={['#FFFFFF']}
-              outerBorderColor={"#D4AF37"}
+              backgroundColors={backgroundColors}
+              textColors={textColors}
+              outerBorderColor={outerBorderColor}
               outerBorderWidth={15}
               innerBorderWidth={0}
-              radiusLineColor={"#D4AF37"}
+              radiusLineColor={radiusLineColor}
               radiusLineWidth={3}
               fontSize={18}
               fontWeight="bold"
               textDistance={70}
-              spinDuration={4.0}
+              spinDuration={4.5}
             />
             {/* Centerpiece */}
-            <div className="absolute w-[120px] h-[120px] bg-zinc-900 rounded-full border-8 border-[#D4AF37] flex items-center justify-center">
+            <div className="absolute w-[120px] h-[120px] bg-background rounded-full border-8 border-secondary flex items-center justify-center">
               <RecklessBearLogo size={60} />
             </div>
           </div>
